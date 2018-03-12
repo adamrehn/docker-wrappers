@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 import os, platform, subprocess, sys
 
+# Executes a command and returns its exit code and output
+def executeCommand(command):
+	proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	(stdout, stderr) = proc.communicate(None)
+	return proc.returncode, stdout, stderr
+
+
 # Generates the wrappers for the specified set of tools
 def generateWrappers(dockerImage, tools):
 	
@@ -16,7 +23,9 @@ def generateWrappers(dockerImage, tools):
 		os.mkdir(wrappersDir)
 	
 	# Pull the docker image if it doesn't already exist
-	subprocess.call(['docker', 'pull', dockerImage])
+	code, stdout, stderr = executeCommand(['docker', 'images', dockerImage, '--format', '{{.Repository}}:{{.Tag}}'])
+	if stdout.strip() != dockerImage:
+		subprocess.call(['docker', 'pull', dockerImage])
 	
 	# Generate the wrappers for each of the tools
 	for tool in tools:
