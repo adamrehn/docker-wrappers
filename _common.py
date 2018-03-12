@@ -24,7 +24,10 @@ def generateWrappers(dockerImage, tools):
 	
 	# Pull the docker image if it doesn't already exist
 	code, stdout, stderr = executeCommand(['docker', 'images', dockerImage, '--format', '{{.Repository}}:{{.Tag}}'])
-	if stdout.strip() != dockerImage:
+	imageFound = stdout.strip()
+	if (sys.version_info.major >= 3):
+		imageFound = imageFound.decode('utf8')
+	if imageFound != dockerImage:
 		subprocess.call(['docker', 'pull', dockerImage])
 	
 	# Generate the wrappers for each of the tools
