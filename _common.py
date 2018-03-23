@@ -32,10 +32,10 @@ def generateWrappers(dockerImage, tools):
 		
 		# Generate the shell script
 		toolScript = '{}/{}'.format(wrappersDir, tool)
-		with open(toolScript, 'w') as sh:
-			sh.write('#!/usr/bin/env docker-script\n')
-			sh.write('#!{} bash\n'.format(dockerImage))
-			sh.write('{} $*\n'.format(tool))
+		with open(toolScript, 'wb') as sh:
+			sh.write('#!/usr/bin/env docker-script\n'.encode('utf-8'))
+			sh.write('#!{} bash\n'.format(dockerImage).encode('utf-8'))
+			sh.write('{} $*\n'.format(tool).encode('utf-8'))
 		
 		# Determine if we are running under Windows or a POSIX-based platform
 		if platform.system() != 'Windows':
@@ -46,5 +46,5 @@ def generateWrappers(dockerImage, tools):
 		else:
 			
 			# Under Windows, generate a batch file to wrap the shell script
-			with open(toolScript + '.bat', 'w') as bat:
-				bat.write('docker-script "%~dp0{}" %*\r\n'.format(tool))
+			with open(toolScript + '.bat', 'wb') as bat:
+				bat.write('docker-script "%~dp0{}" %*\r\n'.format(tool).encode('utf-8'))
